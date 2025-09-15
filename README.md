@@ -1,4 +1,6 @@
 # VueCrack-Plus
 ```
-核心代码参考：https://github.com/cloud-jie/CloudVueRoute
+参考：
+https://github.com/Ad1euDa1e/VueCrack
+https://github.com/cloud-jie/CloudVueRoute
 ```
