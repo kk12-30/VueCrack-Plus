@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 500px;
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            margin: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        h2 {
+            margin-top: 0;
+            color: #41b883;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 svg {
+            margin-right: 8px;
+        }
+        h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #35495e;
+            font-weight: 500;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .status-indicators {
+            margin: 15px 0;
+        }
+        .status-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        .status-item svg {
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .info {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .version-badge {
+            display: inline-block;
+            background-color: #41b883;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .path-list {
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .path-item {
+            padding: 6px 10px;
+            border-bottom: 1px solid #eee;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
+        .path-item:last-child {
+            border-bottom: none;
+        }
+        .path-item:hover {
+            background-color: #f5f5f5;
+        }
+        .full-urls-list {
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .full-url-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-bottom: 1px solid #eee;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
+        .full-url-item:last-child {
+            border-bottom: none;
+        }
+        .url-text {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 5px;
+        }
+        .url-copy-btn, .url-open-btn {
+            background-color: #5f6368;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-left: 4px;
+            transition: background-color 0.2s;
+        }
+        .url-copy-btn:hover {
+            background-color: #4285f4;
+        }
+        .full-urls-list {
+            max-height: none;
+            border: none;
+            border-radius: 0;
+            margin: 0;
+            box-shadow: none;
+        }
+        .url-open-btn {
+            background-color: #41b883;
+        }
+        .url-open-btn:hover {
+            background-color: #349268;
+        }
+        .copy-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+        .secondary-btn {
+            background-color: #35495e;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 8px;
+            transition: background-color 0.2s;
+        }
+        .secondary-btn:hover {
+            background-color: #2c3e50;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(25, 118, 210, 0.3);
+            border-radius: 50%;
+            border-top-color: #1976d2;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+
+        .full-url-item.alternative {
+            background-color: #f5f5f5;
+            padding-left: 20px;
+            border-left: 3px solid #e0e0e0;
+            margin-top: -5px;
+            position: relative;
+        }
+
+        .alt-label {
+            position: absolute;
+            right: 10px;
+            top: 6px;
+            font-size: 10px;
+            background-color: #eeeeee;
+            color: #757575;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .base-path-info {
+            margin-bottom: 10px;
+        }
+
+        .path-type-selector {
+            display: flex;
+            padding: 6px 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .path-type-option {
+            padding: 4px 10px;
+            margin-right: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            background-color: #eee;
+        }
+
+        .path-type-option.active {
+            background-color: #41b883;
+            color: white;
+        }
+
+        .url-group {
+            border-left: 3px solid transparent;
+            margin-bottom: 5px;
+        }
+
+        .url-group.primary {
+            border-left-color: #41b883;
+        }
+
+        .url-section {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .url-section-header {
+            background-color: #f5f5f5;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+        }
+
+        .url-section-header svg {
+            margin-right: 8px;
+        }
+
+        .base-path-urls .full-url-item {
+            background-color: #f8fff9;
+            border-left: 3px solid #41b883;
+        }
+
+        .standard-urls .full-url-item {
+            border-left: 3px solid transparent;
+        }
+
+        .enhanced-info {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .info-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .info-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .info-tab:hover {
+            background-color: #f5f5f5;
+        }
+
+        .info-tab.active {
+            border-bottom-color: #41b883;
+            color: #41b883;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .info-list li {
+            padding: 4px 0;
+            font-size: 12px;
+            color: #666;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
+        .warning-badge {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .success-badge {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .framework-info {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .framework-info .version-badge {
+            margin-left: 10px;
+            margin-right: 5px;
+        }
+
+        .build-tool-badge {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+<h2>
+    <svg width="20" height="20" viewBox="0 0 261.76 226.69" xmlns="http://www.w3.org/2000/svg">
+        <path d="M161.096.001l-30.225 52.351L100.647.001H-.005l130.877 226.688L261.749.001z" fill="#41b883"/>
+        <path d="M161.096.001l-30.225 52.351L100.647.001H52.346l78.526 136.01L209.398.001z" fill="#35495e"/>
+    </svg>
+    VueCrack-Plus
+</h2>
+
+<div id="routerAnalysisContainer"></div>
+
+<div class="info-tabs">
+    <div class="info-tab active" data-tab="routes">🔍 路由分析</div>
+    <div class="info-tab" data-tab="api">🌐 Path路径</div>
+    <div class="info-tab" data-tab="export">📊 导出</div>
+</div>
+
+<div id="tab-routes" class="tab-content active">
+    <div id="pathListContainer"></div>
+</div>
+
+<div id="tab-api" class="tab-content">
+    <div id="apiContainer">
+        <p>正在加载Path路径信息...</p>
+    </div>
+</div>
+
+<div id="tab-export" class="tab-content">
+    <div id="exportContainer">
+        <h4>导出分析结果</h4>
+        <div class="copy-actions">
+            <button id="exportJsonBtn" class="secondary-btn">导出 JSON</button>
+            <button id="exportCsvBtn" class="secondary-btn">导出 CSV</button>
+            <button id="exportReportBtn" class="secondary-btn">生成报告</button>
+        </div>
+        <div id="exportResult" style="margin-top: 15px;"></div>
+    </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
